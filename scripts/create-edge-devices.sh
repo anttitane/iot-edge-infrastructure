@@ -46,7 +46,9 @@ mapfile -t EXISTING < <(az iot hub device-identity list --hub-name "$HUB" --quer
 
 for id in "${IDS[@]}"; do
   echo "Creating/updating Edge device '$id' in hub '$HUB'..."
-  az iot hub device-identity create --device-id "$id" --hub-name "$HUB" --edge-enabled --output none
+  if ! az iot hub device-identity create --device-id "$id" --hub-name "$HUB" --edge-enabled --output none; then
+    echo "Warning: create/update failed for '$id' (likely already exists); continuing" >&2
+  fi
   if $PRINT_CONN; then
     conn=$(az iot hub device-identity connection-string show --device-id "$id" --hub-name "$HUB" --query connectionString -o tsv)
     echo "$id: $conn"
