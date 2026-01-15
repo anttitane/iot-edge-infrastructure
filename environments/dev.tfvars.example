@@ -1,0 +1,5 @@
+# Example variables for a dev environment
+# Copy to dev.tfvars and adjust values as needed
+project_name = "example-project"
+environment  = "dev"
+location     = "westeurope"
