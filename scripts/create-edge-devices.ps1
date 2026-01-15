@@ -27,7 +27,8 @@ try {
 Write-Host "Fetching existing Edge devices..." -ForegroundColor Cyan
 $existing = @()
 try {
-    $existing = az iot hub device-identity list --hub-name $HubName --query "[?capabilities.iotEdge==`true`].deviceId" -o tsv
+    # Pull all device IDs; prune step will remove any not in the desired list.
+    $existing = az iot hub device-identity list --hub-name $HubName --query "[].deviceId" -o tsv
     if ($LASTEXITCODE -ne 0) { throw "az iot hub device-identity list failed with exit code $LASTEXITCODE" }
     $existing = $existing | ForEach-Object { $_.Trim() } | Where-Object { $_ }
 } catch {
@@ -56,7 +57,8 @@ if ($PruneNotInList) {
     $toRemove = $existingSet.Where({ -not $desiredSet.Contains($_) })
     foreach ($id in $toRemove) {
         Write-Host "Deleting Edge device '$id' (not in list)..." -ForegroundColor Yellow
-        az iot hub device-identity delete --device-id $id --hub-name $HubName --yes --output none
+        az iot hub device-identity delete --device-id $id --hub-name $HubName --output none
+        if ($LASTEXITCODE -ne 0) { Write-Warning "Delete failed for '$id'" }
     }
 }
 

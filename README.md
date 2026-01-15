@@ -39,6 +39,7 @@ Create a plain text list of device IDs (one per line, `#` for comments). The scr
 Start from the example and edit locally: `cp devices.example.txt devices.txt` (device lists are gitignored by default).
 Note: the square brackets in the examples mean the flags are optional—omit the brackets when running (e.g., `-PrintConnectionStrings -PruneNotInList`).
 If the PowerShell script reports an azure-iot extension install error, run `az extension add --name azure-iot --yes --debug` manually, then retry.
+The prune flags remove any device IDs in the hub that are not listed in your devices file—review the list before pruning.
 
 ## Files of interest
 - `main.tf`, `modules/iot-hub/`: define the resource group and IoT Hub.

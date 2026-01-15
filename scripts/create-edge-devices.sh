@@ -41,8 +41,8 @@ fi
 echo "Ensuring Azure IoT extension is installed..."
 az extension add --name azure-iot --yes >/dev/null
 
-echo "Fetching existing Edge devices..."
-mapfile -t EXISTING < <(az iot hub device-identity list --hub-name "$HUB" --query "[?capabilities.iotEdge==`true`].deviceId" -o tsv)
+echo "Fetching existing devices..."
+mapfile -t EXISTING < <(az iot hub device-identity list --hub-name "$HUB" --query "[].deviceId" -o tsv)
 
 for id in "${IDS[@]}"; do
   echo "Creating/updating Edge device '$id' in hub '$HUB'..."
@@ -63,7 +63,7 @@ if $PRUNE; then
     done
     if ! $keep; then
       echo "Deleting Edge device '$eid' (not in list)..."
-      az iot hub device-identity delete --device-id "$eid" --hub-name "$HUB" --yes --output none
+      az iot hub device-identity delete --device-id "$eid" --hub-name "$HUB" --output none
     fi
   done
 fi
