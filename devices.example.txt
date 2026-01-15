@@ -1,0 +1,3 @@
+# Example Edge device IDs (one per line)
+edge-gateway-01
+edge-gateway-02

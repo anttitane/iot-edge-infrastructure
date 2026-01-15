@@ -36,6 +36,10 @@ override.tf.json
 backend-*.hcl
 !backend-*.example.hcl
 
+# Device lists (keep real device IDs local)
+devices*.txt
+!devices.example.txt
+
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
