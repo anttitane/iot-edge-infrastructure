@@ -15,7 +15,7 @@ az storage container create -n tfstate --account-name <tfstate-storage-account>
 
 After the backend exists:
 - Copy the backend template and fill in your state storage details: `cp backend-dev.example.hcl backend-dev.hcl` (or create another env-specific file)
-- Initialize Terraform with your backend config: `terraform init -backend-config=backend-dev.hcl`
+- Initialize Terraform with your backend config (use reconfigure when switching backends): `terraform init -reconfigure -backend-config=backend-dev.hcl`
 
 ## What you run
 - Install IoT CLI extension (used for manual connection-string retrieval, not for Terraform): `az extension add --name azure-iot`
