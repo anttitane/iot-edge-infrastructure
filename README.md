@@ -1,6 +1,8 @@
 # iot-edge-infrastructure
 Infrastructure-as-code (IaC) for a single Azure IoT Hub and its supporting resources (resource group).
 
+Optional Cosmos DB (free tier by default) with IoT Hub routing directly to a Cosmos SQL container.
+
 ## Required tools
 - Terraform (tested with v1.6+)
 - Azure CLI (2.59.0+), with the `azure-iot` extension for device operations
@@ -29,6 +31,16 @@ After the backend exists:
 - Plan against your env variables: `terraform plan -var-file="environments/dev.tfvars"`
 - Apply when ready: `terraform apply -var-file="environments/dev.tfvars"`
 
+Cosmos settings (defaults provided; only `cosmos_account_name` is required):
+- `cosmos_account_name` (must be globally unique)
+- Optional: `cosmos_sql_db_name`, `cosmos_sql_container_name`, `cosmos_partition_key_path`, `cosmos_container_throughput`, `cosmos_default_ttl_seconds`, `cosmos_consistency_level`, `cosmos_enable_free_tier`, `enable_cosmos_routing`, `cosmos_route_condition`, `cosmos_endpoint_name`, `cosmos_route_name`
+
+Free-tier guardrails (Cosmos and IoT Hub):
+- Cosmos free tier: enabled by default (`cosmos_enable_free_tier = true`) and throughput validation caps `cosmos_container_throughput` to 1–1000 RU/s. Set `cosmos_default_ttl_seconds` (e.g., 604800 for 7 days) to auto-expire old documents and keep RU/storage low.
+- Partition key path must use a valid JSON property path with no hyphens; use underscores instead (e.g., `/iothub_connection_device_id`).
+- Only one Cosmos free-tier account is allowed per subscription. If another exists, Azure will create a paid account even with `cosmos_enable_free_tier = true`.
+- IoT Hub is set to SKU F1 (free). Stay under the ~8k messages/day limit or upgrade SKUs if you outgrow it.
+
 ## Edge devices (managed outside Terraform)
 Device identities are operational objects; keep them out of Terraform state. Use the provided scripts after the IoT Hub exists:
 
@@ -43,6 +55,7 @@ The prune flags remove any device IDs in the hub that are not listed in your dev
 
 ## Files of interest
 - `main.tf`, `modules/iot-hub/`: define the resource group and IoT Hub.
+- `modules/cosmos/`: Cosmos DB account, SQL DB, and container.
 - `environments/dev.tfvars.example`: template for project/environment/region settings.
 - `environments/dev.tfvars`: your local copy of tfvars (kept out of git by default).
 - `backend-dev.example.hcl`: template for remote state settings. Create your own `backend-*.hcl` locally and keep it out of git.

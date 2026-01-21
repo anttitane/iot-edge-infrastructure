@@ -3,3 +3,4 @@
 project_name = "example-project"
 environment  = "dev"
 location     = "westeurope"
+cosmos_account_name = "cosmos-example-dev"
