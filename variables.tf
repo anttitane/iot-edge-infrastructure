@@ -8,6 +8,12 @@ variable "environment" {
   description = "Environment name (e.g., dev, test, prod)"
 }
 
+variable "subscription_id" {
+  type        = string
+  description = "Azure subscription ID to target (optional if using CLI/env auth)."
+  default     = null
+}
+
 variable "location" {
   type        = string
   description = "Azure region where resources are created"
@@ -62,27 +68,19 @@ variable "cosmos_default_ttl_seconds" {
   default     = -1
 }
 
-variable "enable_cosmos_routing" {
-  type        = bool
-  description = "Whether to create an IoT Hub endpoint and route to Cosmos DB."
-  default     = true
-}
-
-variable "cosmos_endpoint_name" {
+variable "function_storage_account_name" {
   type        = string
-  description = "IoT Hub endpoint name targeting Cosmos DB."
-  default     = "CosmosEndpoint"
+  description = "Storage account name for the Function App (must be globally unique, lowercase letters/numbers)."
 }
 
-variable "cosmos_route_name" {
+variable "function_plan_name" {
   type        = string
-  description = "IoT Hub route name for Cosmos DB."
-  default     = "RouteToCosmos"
+  description = "App Service plan name for the Function App."
+  default     = null
 }
 
-variable "cosmos_route_condition" {
+variable "function_app_name" {
   type        = string
-  description = "Condition for routing to Cosmos DB (expression over message body/headers)."
-  default     = "true"
+  description = "Function App name."
+  default     = null
 }
-
