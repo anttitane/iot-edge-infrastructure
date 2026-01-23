@@ -1,7 +1,35 @@
 # iot-edge-infrastructure
-Infrastructure-as-code (IaC) for a single Azure IoT Hub and its supporting resources (resource group).
+Infrastructure-as-code (IaC) for a single Azure IoT Hub and its supporting resources. This repository provides the foundational infrastructure used to power a robust industrial telemetry pipeline.
 
-Optional Cosmos DB (free tier by default) with a Function App processing IoT Hub events and writing to a Cosmos SQL container (no direct IoT Hub route to Cosmos).
+## Architecture Overview
+This IaC code has been used to deploy and manage the following architecture, bridging on-premises industrial sensors with the Azure Cloud. It is designed to handle high-frequency data with a resilient local buffer.
+
+```mermaid
+graph TD
+	subgraph "On-Premises / Edge Device"
+		A[OPC-UA / MQTT Sensors] -->|Ingest| B[Benthos UMH]
+		B -->|Message Queue| C[(Local Kafka)]
+		C -->|Consume| D[.NET IoT Edge Module<br/>Kafka Connector]
+	end
+
+	subgraph "Azure Cloud"
+		D -->|D2C Messaging| E{Azure IoT Hub}
+		E -->|Trigger| F[Azure Function<br/>Process & Flatten]
+		F -->|Upsert Document| G[(Azure Cosmos DB)]
+	end
+
+	style A fill:#f9f,stroke:#333,stroke-width:2px
+	style C fill:#fff,stroke:#333,stroke-width:4px
+	style E fill:#0078d4,color:#fff
+	style G fill:#333,color:#fff
+```
+
+## How it Works
+- Ingestion: Raw industrial data is captured via OPC-UA or MQTT and normalized by Benthos.
+- Buffering: A local Kafka instance ensures no data is lost during internet outages.
+- Edge-to-Cloud: The custom iot-edge-kafka-connector module consumes Kafka topics and transmits them to Azure IoT Hub.
+- Processing: An Azure Function (iot-telemetry-function) is triggered by the IoT Hub events. It performs "data flattening" to transform complex JSON payloads into optimized documents.
+- Storage: The flattened data is stored in Azure Cosmos DB, partitioned for high-performance analytics.
 
 ## Required tools
 - Terraform (tested with v1.6+)
