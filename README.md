@@ -64,6 +64,11 @@ Note: the square brackets in the examples mean the flags are optional—omit the
 If the PowerShell script reports an azure-iot extension install error, run `az extension add --name azure-iot --yes --debug` manually, then retry.
 The prune flags remove any device IDs in the hub that are not listed in your devices file—review the list before pruning.
 
+Set module deployments for a specific Edge device (requires a deployment JSON file):
+
+- PowerShell (Windows): `./scripts/set-edge-modules.ps1 -HubName "<hub-name>" -DeviceId "<device-id>" -ContentPath "<path to deployment.json>"`
+- Bash (Linux/macOS): `./scripts/set-edge-modules.sh -h <hub-name> -d <device-id> -c <path to deployment.json>`
+
 ## Files of interest
 - `main.tf`, `modules/iot-hub/`: define the resource group, IoT Hub, SAS policy, Function storage/plan/app.
 - `modules/cosmos/`: Cosmos DB account, SQL DB, and container.
